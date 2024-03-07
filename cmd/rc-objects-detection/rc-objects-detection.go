@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/cyrilix/robocar-base/cli"
+	"github.com/cyrilix/robocar-objects-detection/objects"
 	"github.com/cyrilix/robocar-objects-detection/part"
 	"log"
 	"os"
@@ -14,18 +15,22 @@ const (
 
 func main() {
 	var mqttBroker, username, password, clientId string
-	var cameraTopic, objectsTopic string
-	var modelPath, modelConfigPath string
+	var disparityTopic, objectsTopic, objectsCleanTopic string
+	var imgWidth, imgHeight int
+	var objectSizeThreshold float64
 
 	mqttQos := cli.InitIntFlag("MQTT_QOS", 0)
 	_, mqttRetain := os.LookupEnv("MQTT_RETAIN")
 
 	cli.InitMqttFlags(DefaultClientId, &mqttBroker, &username, &password, &clientId, &mqttQos, &mqttRetain)
 
-	flag.StringVar(&cameraTopic, "mqtt-topic-frame", os.Getenv("MQTT_TOPIC_CAMERA"), "Mqtt topic that contains camera frame, use MQTT_TOPIC_CAMERA if args not set")
+	flag.StringVar(&disparityTopic, "mqtt-topic-frame", os.Getenv("MQTT_TOPIC_DISPARITY"), "Mqtt topic that contains disparity frame, use MQTT_TOPIC_DISPARITY if args not set")
 	flag.StringVar(&objectsTopic, "mqtt-topic-objects", os.Getenv("MQTT_TOPIC_OBJECTS"), "Mqtt topic to publish discovered objects, use MQTT_TOPIC_OBJECT if args not set")
-	flag.StringVar(&modelPath, "tf-model-path", os.Getenv("TF_MODEL_PATH"), "Tensorflow model path, use TF_MODEL_PATH if args not set")
-	flag.StringVar(&modelConfigPath, "tf-model-config-path", os.Getenv("TF_MODEL_CONFIG_PATH"), "Tensorflow config model path, use TF_MODEL_CONFIG_PATH if args not set")
+	flag.StringVar(&objectsCleanTopic, "mqtt-topic-objects-clean", os.Getenv("MQTT_TOPIC_OBJECTS_CLEAN"), "Mqtt topic to publish filtered objects, use MQTT_TOPIC_OBJECT_CLEAN if args not set")
+
+	flag.IntVar(&imgWidth, "image-width", 160, "Video pixels width")
+	flag.IntVar(&imgHeight, "image-height", 128, "Video pixels height")
+	flag.Float64Var(&objectSizeThreshold, "image-height", 0.75, "Max object size in percent of image to filter")
 
 	flag.Parse()
 	if len(os.Args) <= 1 {
@@ -39,8 +44,8 @@ func main() {
 	}
 	defer client.Disconnect(50)
 
-	detector := part.NewCarDetector(modelPath, modelConfigPath)
-	p := part.New(client, cameraTopic, objectsTopic, detector)
+	processor := objects.NewFilter(imgWidth, imgHeight, objectSizeThreshold)
+	p := part.New(client, disparityTopic, objectsTopic, objectsCleanTopic, processor)
 	defer p.Stop()
 
 	cli.HandleExit(p)
