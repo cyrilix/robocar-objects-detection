@@ -1,7 +1,8 @@
-FROM golang:alpine as gobuilder
+ARG OPENCV_VERSION=4.8.1
+FROM golang:1.21-alpine as gobuilder
 
 
-FROM cyrilix/opencv-buildstage:4.1.2 as builder
+FROM  ghcr.io/hybridgroup/opencv:${OPENCV_VERSION} as builder
 
 LABEL maintainer="Cyrille Nofficial"
 
@@ -11,20 +12,14 @@ ENV PATH /usr/local/go/bin:$GOPATH/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p "/src $GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-ENV PKG_CONFIG_PATH /usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
-ENV CGO_CPPFLAGS -I/usr/local/include
-ENV CGO_CXXFLAGS "--std=c++1z"
-
 WORKDIR /src
 ADD . .
 
-RUN CGO_LDFLAGS="$(pkg-config --libs opencv4)" \
-    CGO_ENABLED=1 CGO_CPPFLAGS=${CGO_CPPFLAGS} CGO_CXXFLAGS=${CGO_CXXFLAGS} CGO_LDFLAGS=${CGO_LDFLAGS} GOOS=${GOOS} GOARCH=${GOARCH} GOARM=${GOARM} go build -mod vendor -a ./cmd/rc-objects-detection/
+RUN go build -mod vendor -a ./cmd/rc-objects-detection/
 
 
 
-
-FROM cyrilix/opencv-runtime:4.1.2
+FROM ghcr.io/hybridgroup/opencv:${OPENCV_VERSION}
 
 ENV LD_LIBRARY_PATH /usr/local/lib:/usr/local/lib64
 

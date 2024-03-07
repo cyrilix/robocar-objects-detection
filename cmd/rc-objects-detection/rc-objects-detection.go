@@ -30,7 +30,7 @@ func main() {
 
 	flag.IntVar(&imgWidth, "image-width", 160, "Video pixels width")
 	flag.IntVar(&imgHeight, "image-height", 128, "Video pixels height")
-	flag.Float64Var(&objectSizeThreshold, "image-height", 0.75, "Max object size in percent of image to filter")
+	flag.Float64Var(&objectSizeThreshold, "object-size-threshold", 0.75, "Max object size in percent of image to filter")
 
 	flag.Parse()
 	if len(os.Args) <= 1 {
