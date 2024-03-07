@@ -104,6 +104,8 @@ void WarpAffine(Mat src, Mat dst, Mat rot_mat, Size dsize);
 void WarpAffineWithParams(Mat src, Mat dst, Mat rot_mat, Size dsize, int flags, int borderMode,
                           Scalar borderValue);
 void WarpPerspective(Mat src, Mat dst, Mat m, Size dsize);
+void WarpPerspectiveWithParams(Mat src, Mat dst, Mat rot_mat, Size dsize, int flags, int borderMode,
+                               Scalar borderValue);
 void Watershed(Mat image, Mat markers);
 void ApplyColorMap(Mat src, Mat dst, int colormap);
 void ApplyCustomColorMap(Mat src, Mat dst, Mat colormap);
@@ -113,6 +115,7 @@ Mat GetAffineTransform(PointVector src, PointVector dst);
 Mat GetAffineTransform2f(Point2fVector src, Point2fVector dst);
 Mat FindHomography(Mat src, Mat dst, int method, double ransacReprojThreshold, Mat mask, const int maxIters, const double confidence) ;
 void DrawContours(Mat src, PointsVector contours, int contourIdx, Scalar color, int thickness);
+void DrawContoursWithParams(Mat src, PointsVector contours, int contourIdx, Scalar color, int thickness, int lineType, Mat hierarchy, int maxLevel, Point offset);
 void Sobel(Mat src, Mat dst, int ddepth, int dx, int dy, int ksize, double scale, double delta, int borderType);
 void SpatialGradient(Mat src, Mat dx, Mat dy, int ksize, int borderType);
 void Remap(Mat src, Mat dst, Mat map1, Mat map2, int interpolation, int borderMode, Scalar borderValue);
@@ -121,6 +124,7 @@ void SepFilter2D(Mat src, Mat dst, int ddepth, Mat kernelX, Mat kernelY, Point a
 void LogPolar(Mat src, Mat dst, Point center, double m, int flags);
 void FitLine(PointVector pts, Mat line, int distType, double param, double reps, double aeps);
 void LinearPolar(Mat src, Mat dst, Point center, double maxRadius, int flags);
+double MatchShapes(PointVector contour1, PointVector contour2, int method, double parameter);
 bool ClipLine(Size imgSize, Point pt1, Point pt2);
 CLAHE CLAHE_Create();
 CLAHE CLAHE_CreateWithParams(double clipLimit, Size tileGridSize);

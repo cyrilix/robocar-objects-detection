@@ -1,3 +1,179 @@
+0.35.0
+---
+* **all**
+    * Add support for OpenCV 4.8.1
+    * correct Go formatting
+* **features2d**
+    * Add Match method for BFMatcher
+* **build**
+    * remove extra files from GH actions runner so GPU images builds have enough temp file space to run correctly
+* **make**
+    * for build_raspi added conditional cmake build for 64 and 32bit platforms
+    * remove ENABLE_VFPV3=ON and add WITH_TBB=ON from 64bit build.
+    * added sudo_pre_install_clean to raspberry pi and jetson installs
+    * change sudo_pre_install_clean to support cleanup on 64bit architechtures (arm and x86)
+
+0.34.0
+---
+* **all**
+    * Add support for OpenCV 4.8.0
+    * Add support for Go 1.21
+* **build**
+    * update all builds to use OpenCV 4.8.0
+* **core**
+    * Adds support for PCACompute
+* **docker**
+    * add dockerfile for OpenCV static build
+* **make**
+    * Leave one processor free instead of using all of them when building
+
+
+0.33.0
+---
+* **bugfix**
+    * Remove opencv2/aruco.hpp include
+* **all**
+    * build performance tests with all OpenCV builds
+* **build**
+    * build and push Ubuntu 22.04 base image with OpenCV 4.7.0
+    * docker images with opencv
+    * docker production images with opencv 4.7.0
+    * Docker push to GHCR
+* **core**
+    * Add ReduceArgMax and ReduceArgMin
+* **dnn**
+    * improved NMSBoxes code
+* **docker**
+    * add dockerfile for Ubuntu 22.04 OpenCV base image
+    * updates to migrate to GHCR
+* **examples**
+    * Deallocate Mats in feature-matching example.
+    * Fix G108 (CWE-200) and G114 (CWE-676)
+    * Fix G304 (CWE-22) and G307 (CWE-703)
+    * Fix G304 (CWE-22) and G307 (CWE-703)
+    * Missed #nosec tag
+* **make**
+    * Ubuntu Jammy (22) opencv build support.
+
+
+0.32.0
+---
+* **all**
+    * update to OpenCV 4.7.0
+* **core**
+    * Add the number of thread setter and getter
+* **calib3d**
+    * add EstimateAffinePartial2DWithParams()
+* **imgcodecs**
+    * Add IMDecodeIntoMat to reduce heap allocations (#1035)
+* **imgproc**
+    * add matchShapes function support
+* **objdetect**
+    * move aruco from contrib and also refactor/update to match current OpenCV API
+* **photo**
+    * add inpaint function
+* **video**
+    * cv::KalmanFilter bindings.
+* **cuda**
+    * add support for cuda::TemplateMatching
+* **docker**
+    * update all dockerfiles for OpenCV 4.7.0/GoCV 0.32.0
+    * multiplatform for both amd64 and arm64
+    * install libjpeg-turbo into docker image
+    * add Ubunutu 18.04 and 20.04 prebuilt OpenCV images
+    * add dockerfile for older version of CUDA for those who cannot upgrade
+* **ci**
+    * remove circleci
+    * correct actions that trigger build
+* **make**
+    * change download path for OpenCV release tag
+* **windows**
+    * Update win_build_opencv.cmd
+* **docs**
+    * correct docs on building docker
+    * update ROADMAP
+    * typo in comment
+    * update comments style with gofmt
+* **openvino**
+    * Add openvino Dockerfile
+    * Fix OpenvinoVersion dangling pointer
+    * Update env.sh and README.md for 2022.1
+
+0.31.0
+---
+* **all**
+    * update to OpenCV 4.6.0
+* **build**
+    * Switch to Github Actions for Linux CI build
+    * Use go -tags static when verifying static build
+* **core**
+    * Add Mat.ElemSize (#964)
+    * avoid index out of range panic in NewPointsVectorFromPoints
+* **video**
+    * add findTransformECC function
+* **contrib/ximgproc**
+    * add PeiLinNormalization() function
+    * add anisotropicDiffusion() function
+    * implement edgePreservingFilter()
+    * implement niBlackThreshold and thinning filters
+
+0.30.0
+---
+* **all**
+    * update to OpenCV 4.5.5
+* **build**
+    * add install_nonfree make task to build all opencv_contrib modules
+    * correct download location for onnx test file
+    * Update Makefile for missing version changes
+* **core**
+    * correct how memory is being allocated for Eye(), Zeros(), and Ones() to address issue #930
+* **calib3d** 
+    * Adding support for estimateAffine2DWithParams (#924)
+* **imgproc**
+    * Add DrawContoursWithParams function
+* **photo**
+    * Add bindings for fastNlMeansDenoising and fastNlMeansDenoisingColored
+    * add detailEnhance function
+    * add EdgePreservingFilter function
+    * add PencilSketch function
+    * add stylization function
+* **docs**
+    * add godoc comments for FastNlMeansDenoising functions
+    * update README with info on latest mingw-w64 t use for Windows builds
+    * dnn pose detect examples correct the order of the argument variable name
+* **examples**
+    * Fixed memory leaks in the motion detection example
+* **openvino**
+    * Update env.sh and README.md
+* **windows**
+    * use mingw-w64 8.1.0 for protobuf compile
+* **contrib**
+    * add cv::wechat_qrcode::WeChatQRCode (#949)
+    * Update cgo_static.go
+
+0.29.0
+---
+* **all**
+    * update to OpenCV 4.5.4
+* **build**
+    * add static build ability on windows
+    * use tbb for all builds for CPU accelerated operations
+* **cuda**
+    * implement a bunch of per-element operations
+    * add get/set/reset device functions
+    * add NewGpuMatWithSize() to preallocate device memory
+    * Reshape() returns a new GpuMat with the changed data
+    * correct use of Stream by adding WaitForCompletion() and passing pre-allocated GpuMats
+* **docs**
+    * update ROADMAP from recent contributions
+* **videoio**
+    * Fix open video capture with api test (#895)
+* **calib3d**
+    * added EstimateAffine2D
+    * findChessboardCornersSB
+* **aruco**
+    * added many functions as part of initial implementation
+
 0.28.0
 ---
 * **all**
