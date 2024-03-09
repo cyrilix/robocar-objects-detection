@@ -5,6 +5,7 @@ import (
 	"github.com/cyrilix/robocar-base/cli"
 	"github.com/cyrilix/robocar-objects-detection/objects"
 	"github.com/cyrilix/robocar-objects-detection/part"
+	"go.uber.org/zap"
 	"log"
 	"os"
 )
@@ -32,11 +33,26 @@ func main() {
 	flag.IntVar(&imgHeight, "image-height", 128, "Video pixels height")
 	flag.Float64Var(&objectSizeThreshold, "object-size-threshold", 0.75, "Max object size in percent of image to filter")
 
+	logLevel := zap.LevelFlag("log", zap.InfoLevel, "log level")
 	flag.Parse()
+
 	if len(os.Args) <= 1 {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
+
+	config := zap.NewDevelopmentConfig()
+	config.Level = zap.NewAtomicLevelAt(*logLevel)
+	lgr, err := config.Build()
+	if err != nil {
+		log.Fatalf("unable to init logger: %v", err)
+	}
+	defer func() {
+		if err := lgr.Sync(); err != nil {
+			log.Printf("unable to Sync logger: %v\n", err)
+		}
+	}()
+	zap.ReplaceGlobals(lgr)
 
 	client, err := cli.Connect(mqttBroker, username, password, clientId)
 	if err != nil {
