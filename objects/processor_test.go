@@ -180,31 +180,44 @@ func TestObjectFilter_filterBottomImages(t *testing.T) {
 }
 
 func TestObjectFilter_nearObject(t *testing.T) {
-	type fields struct {
-		imgWidth      int
-		imgHeight     int
-		sizeThreshold float64
-	}
 	type args struct {
 		objects []*events.Object
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    *events.Object
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "List object is empty",
+			args: args{
+				objects: []*events.Object{},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+		{
+			name: "List with only one object",
+			args: args{
+				objects: []*events.Object{&objectOnMiddleNear},
+			},
+			want:    &objectOnMiddleNear,
+			wantErr: false,
+		},
+		{
+			name: "List with many objects",
+			args: args{
+				objects: []*events.Object{&objectOnLeftDistant, &objectOnMiddleNear, &objectOnRightDistant, &objectOnMiddleDistant},
+			},
+			want:    &objectOnMiddleNear,
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			o := &ObjectFilter{
-				imgWidth:      tt.fields.imgWidth,
-				imgHeight:     tt.fields.imgHeight,
-				sizeThreshold: tt.fields.sizeThreshold,
-			}
-			got, err := o.nearObject(tt.args.objects)
+			c := &ObjectFilter{}
+			got, err := c.nearObject(tt.args.objects)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("nearObject() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -215,6 +228,7 @@ func TestObjectFilter_nearObject(t *testing.T) {
 		})
 	}
 }
+
 func TestCorrector_nearObject(t *testing.T) {
 	type args struct {
 		objects []*events.Object
