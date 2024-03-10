@@ -132,5 +132,6 @@ var registerCallBacks = func(o *ObjectDetectPart) {
 }
 
 var publish = func(client mqtt.Client, topic string, payload *[]byte) {
+	zap.S().Debugf("publish to %s", topic)
 	client.Publish(topic, 0, false, *payload)
 }
