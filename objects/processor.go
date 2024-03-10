@@ -62,14 +62,20 @@ type ObjectFilter struct {
 
 func (o *ObjectFilter) Process(objs []*events.Object, _ *Disparity) ([]*events.Object, error) {
 
+	zap.S().Debugf("%v objects to filter", len(objs))
 	objects := o.filterBigObjects(objs)
-	objects = o.filterBottomImages(objects)
+	zap.S().Debugf("%v objects after removing big objects", len(objects))
 
-	zap.S().Debugf("%v objects to avoid", len(objects))
+	objects = o.filterBottomImages(objects)
+	zap.S().Debugf("%v objects after removing bottom object", len(objects))
+
+	zap.S().Debugf("%v objects to avoid before grouping", len(objects))
 	if len(objects) == 0 {
 		return []*events.Object{}, nil
 	}
+
 	grpObjs := GroupObjects(objects, o.imgWidth, o.imgHeight)
+	zap.S().Debugf("%v objects after objects grouping", len(objects))
 
 	// get nearest object
 	nearest, err := o.nearObject(grpObjs)
