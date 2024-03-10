@@ -110,8 +110,9 @@ func (o *ObjectFilter) nearObject(objects []*events.Object) (*events.Object, err
 
 	var result *events.Object
 	for _, obj := range objects {
-		if result == nil || obj.Bottom > result.Bottom {
-			result = obj
+		objCpy := obj
+		if result == nil || objCpy.Bottom > result.Bottom {
+			result = objCpy
 			continue
 		}
 	}
