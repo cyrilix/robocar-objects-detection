@@ -66,8 +66,8 @@ func (o *ObjectFilter) Process(objs []*events.Object, _ *Disparity) ([]*events.O
 	objects := o.filterBigObjects(objs)
 	zap.S().Debugf("%v objects after removing big objects", len(objects))
 
-	objects = o.filterBottomImages(objects)
-	zap.S().Debugf("%v objects after removing bottom object", len(objects))
+	//objects = o.filterBottomImages(objects)
+	//zap.S().Debugf("%v objects after removing bottom object", len(objects))
 
 	zap.S().Debugf("%v objects to avoid before grouping", len(objects))
 	if len(objects) == 0 {
