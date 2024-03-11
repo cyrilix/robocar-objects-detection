@@ -30,7 +30,8 @@ func GroupObjects(objects []*events.Object, imgWidth, imgHeight int) []*events.O
 	grp := gocv.GroupRectangles(rectangles, 1, 0.2)
 	result := make([]*events.Object, 0, len(grp))
 	for _, r := range grp {
-		result = append(result, rectToObject(&r, imgWidth, imgHeight))
+		rCpy := r
+		result = append(result, rectToObject(&rCpy, imgWidth, imgHeight))
 	}
 	return result
 }

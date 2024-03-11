@@ -18,7 +18,7 @@ type Disparity struct {
 	FocalLengthInPixels float64
 }
 
-func (d Disparity) DistanceInMm(object *events.Object) int {
+func (d *Disparity) DistanceInMm(object *events.Object) int {
 	disp := d.Mat.GetDoubleAt(
 		// Box coordonnates in %
 		int(float64(d.Mat.Rows())*float64(object.GetTop()+((object.GetBottom()-object.GetTop())/2))),

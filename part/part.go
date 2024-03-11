@@ -78,7 +78,9 @@ func (o *ObjectDetectPart) onDisparityMessage(_ mqtt.Client, msg mqtt.Message) {
 	}
 	o.muDisparity.Lock()
 	defer o.muDisparity.Unlock()
-
+	if o.disparity != nil {
+		o.disparity.Close()
+	}
 	o.disparity = &disparity
 	o.publishChan <- struct{}{}
 }
