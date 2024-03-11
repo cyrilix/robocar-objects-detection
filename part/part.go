@@ -15,7 +15,7 @@ import (
 func New(client mqtt.Client, disparityTopic, objectsTopic, objectCleanTopic string, processor objects.Processor) *ObjectDetectPart {
 	return &ObjectDetectPart{
 		client:            client,
-		publishChan:       make(chan interface{}),
+		publishChan:       make(chan interface{}, 10),
 		cancel:            make(chan interface{}),
 		processor:         processor,
 		disparityTopic:    disparityTopic,
@@ -26,7 +26,7 @@ func New(client mqtt.Client, disparityTopic, objectsTopic, objectCleanTopic stri
 
 type ObjectDetectPart struct {
 	client      mqtt.Client
-	publishChan chan (interface{})
+	publishChan chan interface{}
 	cancel      chan interface{}
 
 	muObjects sync.RWMutex
@@ -117,7 +117,7 @@ func (o *ObjectDetectPart) publishObject() {
 		zap.S().Errorf("unable to unmarshal protobuf %T message: %v", payload, err)
 		return
 	}
-	publish(o.client, o.objectsCleanTopic, &payload)
+	publish(o.client, o.objectsCleanTopic, payload)
 }
 
 var registerCallBacks = func(o *ObjectDetectPart) {
@@ -131,7 +131,7 @@ var registerCallBacks = func(o *ObjectDetectPart) {
 	}
 }
 
-var publish = func(client mqtt.Client, topic string, payload *[]byte) {
+var publish = func(client mqtt.Client, topic string, payload []byte) {
 	zap.S().Debugf("publish to %s", topic)
-	client.Publish(topic, 0, false, *payload)
+	client.Publish(topic, 0, false, payload)
 }
