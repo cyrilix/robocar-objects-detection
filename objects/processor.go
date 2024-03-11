@@ -90,7 +90,8 @@ func (o *ObjectFilter) filterBigObjects(objects []*events.Object) []*events.Obje
 	sizeLimit := float64(o.imgWidth*o.imgHeight) * o.sizeThreshold
 	for _, obj := range objects {
 		if sizeObject(obj, o.imgWidth, o.imgHeight) < sizeLimit {
-			objectFiltered = append(objectFiltered, obj)
+			objCpy := obj
+			objectFiltered = append(objectFiltered, objCpy)
 		}
 	}
 	return objectFiltered

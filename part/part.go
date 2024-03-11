@@ -79,7 +79,9 @@ func (o *ObjectDetectPart) onDisparityMessage(_ mqtt.Client, msg mqtt.Message) {
 	o.muDisparity.Lock()
 	defer o.muDisparity.Unlock()
 	if o.disparity != nil {
-		o.disparity.Close()
+		if err = o.disparity.Close(); err != nil {
+			zap.S().Errorf("unable to close disparity image: %v", err)
+		}
 	}
 	o.disparity = &disparity
 	o.publishChan <- struct{}{}
