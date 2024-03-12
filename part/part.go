@@ -112,6 +112,7 @@ func (o *ObjectDetectPart) publishObject() {
 	defer o.muDisparity.Unlock()
 
 	objs, err := o.processor.Process(o.objects, o.disparity)
+
 	message := events.ObjectsMessage{
 		Objects:  objs,
 		FrameRef: o.frameRef,

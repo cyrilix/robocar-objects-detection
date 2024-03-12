@@ -19,6 +19,7 @@ func main() {
 	var disparityTopic, objectsTopic, objectsCleanTopic string
 	var imgWidth, imgHeight int
 	var objectSizeThreshold float64
+	var enableBigObjectsRemove, enableGroupObjects, enableBottomFilter, enableNearest bool
 
 	mqttQos := cli.InitIntFlag("MQTT_QOS", 0)
 	_, mqttRetain := os.LookupEnv("MQTT_RETAIN")
@@ -32,6 +33,11 @@ func main() {
 	flag.IntVar(&imgWidth, "image-width", 160, "Video pixels width")
 	flag.IntVar(&imgHeight, "image-height", 128, "Video pixels height")
 	flag.Float64Var(&objectSizeThreshold, "object-size-threshold", 0.75, "Max object size in percent of image to filter")
+
+	flag.BoolVar(&enableBigObjectsRemove, "enable-big-objects-remove", true, "Filter object where size > object-size-threshold of image size")
+	flag.BoolVar(&enableGroupObjects, "enable-group-objects", true, "Group objects inside others")
+	flag.BoolVar(&enableBottomFilter, "enable-bottom-filter", true, "Remove object bottom of the frame")
+	flag.BoolVar(&enableNearest, "enable-nearest-filter", true, "Keep nearest object only")
 
 	logLevel := zap.LevelFlag("log", zap.InfoLevel, "log level")
 	flag.Parse()
@@ -60,7 +66,7 @@ func main() {
 	}
 	defer client.Disconnect(50)
 
-	processor := objects.NewFilter(imgWidth, imgHeight, objectSizeThreshold)
+	processor := objects.NewFilter(imgWidth, imgHeight, objectSizeThreshold, enableBigObjectsRemove, enableGroupObjects, enableBottomFilter, enableNearest)
 	p := part.New(client, disparityTopic, objectsTopic, objectsCleanTopic, processor)
 	defer p.Stop()
 

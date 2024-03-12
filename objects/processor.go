@@ -46,43 +46,61 @@ func (o ObjectProcessor) Process(objects []*events.Object, disparity *Disparity)
 	return result, nil
 }
 
-func NewFilter(imgWidth int, imgHeight int, sizeThreshold float64) *ObjectFilter {
+func NewFilter(imgWidth int, imgHeight int, sizeThreshold float64, enableBigObjectsRemove bool, enableGroupObjects bool,
+	enableBottomFilter bool, enableNearest bool) *ObjectFilter {
 	return &ObjectFilter{
-		imgWidth:      imgWidth,
-		imgHeight:     imgHeight,
-		sizeThreshold: sizeThreshold,
+		imgWidth:               imgWidth,
+		imgHeight:              imgHeight,
+		sizeThreshold:          sizeThreshold,
+		enableBigObjectsRemove: enableBigObjectsRemove,
+		enableGroupObjects:     enableGroupObjects,
+		enableBottomFilter:     enableBottomFilter,
+		enableNearest:          enableNearest,
 	}
 }
 
 type ObjectFilter struct {
-	imgWidth      int
-	imgHeight     int
-	sizeThreshold float64
+	imgWidth               int
+	imgHeight              int
+	sizeThreshold          float64
+	enableBigObjectsRemove bool
+	enableGroupObjects     bool
+	enableBottomFilter     bool
+	enableNearest          bool
 }
 
 func (o *ObjectFilter) Process(objs []*events.Object, _ *Disparity) ([]*events.Object, error) {
 
-	zap.S().Debugf("%v objects to filter", len(objs))
-	objects := o.filterBigObjects(objs)
-	zap.S().Debugf("%v objects after removing big objects", len(objects))
-
-	//objects = o.filterBottomImages(objects)
-	//zap.S().Debugf("%v objects after removing bottom object", len(objects))
-
-	zap.S().Debugf("%v objects to avoid before grouping", len(objects))
-	if len(objects) == 0 {
-		return []*events.Object{}, nil
+	objects := objs
+	if o.enableBigObjectsRemove {
+		zap.S().Debugf("%v objects to filter", len(objects))
+		objects = o.filterBigObjects(objects)
+		zap.S().Debugf("%v objects after removing big objects", len(objects))
 	}
 
-	grpObjs := GroupObjects(objects, o.imgWidth, o.imgHeight)
-	zap.S().Debugf("%v objects after objects grouping", len(objects))
+	if o.enableBottomFilter {
+		zap.S().Debugf("%v objects before removing bottom object", len(objects))
+		objects = o.filterBottomImages(objects)
+		zap.S().Debugf("%v objects after removing bottom object", len(objects))
+	}
+
+	if o.enableGroupObjects {
+		zap.S().Debugf("%v objects to avoid before grouping", len(objects))
+		if len(objects) > 1 {
+			objects = GroupObjects(objects, o.imgWidth, o.imgHeight)
+		}
+		zap.S().Debugf("%v objects after objects grouping", len(objects))
+	}
 
 	// get nearest object
-	nearest, err := o.nearObject(grpObjs)
-	if err != nil {
-		return nil, fmt.Errorf("unexpected error on nearest search object, ignore objects: %v", err)
+	if o.enableNearest {
+		nearest, err := o.nearObject(objects)
+		if err != nil {
+			return nil, fmt.Errorf("unexpected error on nearest search object, ignore objects: %v", err)
+		}
+		objects = []*events.Object{nearest}
 	}
-	return []*events.Object{nearest}, nil
+	return objects, nil
 }
 
 func (o *ObjectFilter) filterBigObjects(objects []*events.Object) []*events.Object {
@@ -99,9 +117,10 @@ func (o *ObjectFilter) filterBigObjects(objects []*events.Object) []*events.Obje
 
 func (o *ObjectFilter) filterBottomImages(objects []*events.Object) []*events.Object {
 	objectFiltered := make([]*events.Object, 0, len(objects))
-	for _, o := range objects {
-		if o.Top > 0.90 {
-			objectFiltered = append(objectFiltered, o)
+	for _, obj := range objects {
+		if obj.Top > 0.90 {
+			oCpy := obj
+			objectFiltered = append(objectFiltered, oCpy)
 		}
 	}
 	return objectFiltered
