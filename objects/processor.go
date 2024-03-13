@@ -118,7 +118,7 @@ func (o *ObjectFilter) filterBigObjects(objects []*events.Object) []*events.Obje
 func (o *ObjectFilter) filterBottomImages(objects []*events.Object) []*events.Object {
 	objectFiltered := make([]*events.Object, 0, len(objects))
 	for _, obj := range objects {
-		if obj.Top > 0.90 {
+		if obj.Bottom < 1-0.90 {
 			oCpy := obj
 			objectFiltered = append(objectFiltered, oCpy)
 		}
