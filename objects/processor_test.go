@@ -72,8 +72,7 @@ func TestNewFilter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewFilter(tt.args.imgWidth, tt.args.imgHeight, tt.args.sizeThreshold, false,
-				false, false, false); !reflect.DeepEqual(got, tt.want) {
+			if got := NewFilter(tt.args.imgWidth, tt.args.imgHeight, false, false, false); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewFilter() = %v, want %v", got, tt.want)
 			}
 		})
